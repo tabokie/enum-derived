@@ -27,7 +27,7 @@ fn main() {
     let mut seen_variants = HashSet::new();
 
     for _ in 0..200 {
-        let rt = RandomTypes::rand();
+        let rt = RandomTypes::rand_deprecated();
         match rt {
             RandomTypes::FloatingPoint(x, y) => {
                 assert_eq!(x, 0.0);

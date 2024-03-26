@@ -17,7 +17,7 @@ fn stamped(_rng: &mut impl rand::Rng) -> bool {
 
 fn main() {
     for _ in 0..10000 {
-        let r = Messages::rand();
+        let r = Messages::rand_deprecated();
         if let Messages::Letter { has_stamp, .. } = r {
             assert_eq!(has_stamp, stamped())
         }

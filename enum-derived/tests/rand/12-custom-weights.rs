@@ -23,7 +23,7 @@ fn main() {
     let mut seen_variants: HashMap<_, i32> = HashMap::new();
 
     for _ in 0..11000 {
-        let rt = RandomWeights::rand();
+        let rt = RandomWeights::rand_deprecated();
         let counts = seen_variants.entry(std::mem::discriminant(&rt)).or_default();
         *counts += 1;
     }

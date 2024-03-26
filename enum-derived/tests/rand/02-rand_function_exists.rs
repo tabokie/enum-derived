@@ -8,6 +8,6 @@ pub enum Sample {
 }
 
 fn main() {
-    let _s = Sample::rand();
+    let _s = Sample::rand_deprecated();
 }
 

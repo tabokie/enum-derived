@@ -13,7 +13,7 @@ pub enum Dna {
 fn main() {
     let mut seen_variants = HashSet::new();
     for _ in 0..1000 {
-        let _ = seen_variants.insert(Dna::rand());
+        let _ = seen_variants.insert(Dna::rand_deprecated());
     }
 
     assert!(seen_variants.contains(&Dna::A));

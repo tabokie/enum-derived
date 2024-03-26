@@ -16,7 +16,7 @@ fn is_rand(_rng: &mut impl rand::Rng) -> bool {
 fn main() {
     let mut seen_values = HashSet::new();
     for _ in 0..10000 {
-        let r = Hello::rand();
+        let r = Hello::rand_deprecated();
         assert_eq!(r.1, false);
         seen_values.insert(r.0);
     }

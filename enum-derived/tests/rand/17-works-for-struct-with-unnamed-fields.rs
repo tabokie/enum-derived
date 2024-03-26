@@ -8,7 +8,7 @@ pub struct Hello(u8);
 fn main() {
     let mut seen_values = HashSet::new();
     for _ in 0..10000 {
-        let r = Hello::rand();
+        let r = Hello::rand_deprecated();
         seen_values.insert(r.0);
     }
     assert_eq!(seen_values.len(), u8::MAX as usize + 1);

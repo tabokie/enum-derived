@@ -17,6 +17,6 @@ pub enum RandomTypes {
 
 fn main() {
     for _ in 0..200 {
-        let _rt = RandomTypes::rand();
+        let _rt = RandomTypes::rand_deprecated();
     }
 }

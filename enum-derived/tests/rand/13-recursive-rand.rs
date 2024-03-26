@@ -20,5 +20,5 @@ pub enum TopLevel {
 }
 
 fn main() {
-    let _rt = TopLevel::rand();
+    let _rt = TopLevel::rand_deprecated();
 }

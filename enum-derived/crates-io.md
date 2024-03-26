@@ -49,7 +49,7 @@ enum TravelLog {
 }
 
 fn main() {
-    let travel_log = TravelLog::rand();
+    let travel_log = TravelLog::rand_deprecated();
 }
 
 fn always_has_sunroof(_rng: &mut impl rand::Rng) -> TravelLog {

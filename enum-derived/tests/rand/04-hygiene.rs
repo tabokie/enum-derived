@@ -24,7 +24,7 @@ mod rand {
 fn main() {
     let mut seen_variants = HashSet::new();
     for _ in 0..1000 {
-        seen_variants.insert(Sample::rand());
+        seen_variants.insert(Sample::rand_deprecated());
     }
 
     assert!(seen_variants.contains(&Sample::A));

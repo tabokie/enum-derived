@@ -3,7 +3,7 @@
 
 use rand::{
     distributions::{Distribution, Standard},
-    thread_rng, Rng,
+    Rng,
 };
 
 /// Derive [Rand] for any enum or struct
@@ -11,22 +11,18 @@ pub use enum_derived_macro::Rand;
 
 /// Generate a random version of the implementor
 pub trait Rand: Sized {
-    fn rand() -> Self {
-        Self::rand_ext(&mut thread_rng())
+    fn rand_deprecated() -> Self {
+        unimplemented!()
     }
 
-    fn rand_ext<R: Rng>(rng: &mut R) -> Self;
+    fn rand<R: Rng>(rng: &mut R, usr: &dyn std::any::Any) -> Self;
 }
 
 impl<S> Rand for S
 where
     Standard: Distribution<S>,
 {
-    fn rand() -> Self {
-        thread_rng().gen()
-    }
-
-    fn rand_ext<R: Rng>(rng: &mut R) -> Self {
+    fn rand<R: Rng>(rng: &mut R, _usr: &dyn std::any::Any) -> Self {
         rng.gen()
     }
 }

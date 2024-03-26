@@ -24,8 +24,8 @@ fn expand_derive_rand_struct(
 
     let expanded = quote! {
         impl ::enum_derived::Rand for #struct_name {
-            fn rand_ext<R: ::rand::Rng>(rng: &mut R) -> Self {
-                (#rand_struct_generator)(rng)
+            fn rand<R: ::rand::Rng>(rng: &mut R, usr: &dyn std::any::Any) -> Self {
+                (#rand_struct_generator)(rng, usr)
             }
         }
     };
@@ -49,15 +49,15 @@ fn expand_derive_rand_enum(
 
     let expanded = quote! {
         impl ::enum_derived::Rand for #enum_name {
-            fn rand_ext<R: ::rand::Rng>(rng: &mut R) -> Self {
+            fn rand<R: ::rand::Rng>(rng: &mut R, usr: &dyn std::any::Any) -> Self {
                 use ::rand::{Rng, distributions::{WeightedIndex, Distribution}};
 
-                let mut random_enums: Vec<Box<dyn Fn(&mut R) -> Self>> = vec![#(#var_rand_funcs),*];
+                let mut random_enums: Vec<Box<dyn Fn(&mut R, &dyn std::any::Any) -> Self>> = vec![#(#var_rand_funcs),*];
                 let enum_weights = vec![#(#weights),*];
                 let dist = WeightedIndex::new(&enum_weights).unwrap();
 
                 let enum_idx: usize = dist.sample(&mut *rng);
-                (*random_enums.swap_remove(enum_idx))(&mut *rng)
+                (*random_enums.swap_remove(enum_idx))(&mut *rng, usr)
             }
         }
     };
@@ -93,8 +93,8 @@ fn variant_generator(enum_name: &Ident, variant: &Variant) -> proc_macro2::Token
     };
 
     quote! {
-        ::std::boxed::Box::new(|rng| {
-            (#variant_generator)(rng)
+        ::std::boxed::Box::new(|rng, usr| {
+            (#variant_generator)(rng, usr)
         })
     }
 }
@@ -106,30 +106,33 @@ fn build_entity_generator(
 ) -> proc_macro2::TokenStream {
     match fields {
         Fields::Unit => {
-            quote! { |_rng| #entity_name }
+            quote! { |_rng, _usr| #entity_name }
         }
         Fields::Unnamed(unnamed_fields) => {
             let fields_rand_generators = unnamed_fields.unnamed.iter().map(get_field_generator);
-            quote! { |rng: &mut R| #entity_name(#(#fields_rand_generators(&mut *rng)),*) }
+            quote! { |rng: &mut R, usr: &dyn std::any::Any| #entity_name(#(#fields_rand_generators(&mut *rng, usr)),*) }
         }
         Fields::Named(named_fields) => {
             let fields_ident = named_fields.named.iter().map(|f| f.ident.clone().unwrap());
             let fields_rand_generators = named_fields.named.iter().map(get_field_generator);
 
-            quote! { |rng: &mut R| #entity_name { #(#fields_ident: #fields_rand_generators(&mut *rng)),* } }
+            quote! { |rng: &mut R, usr: &dyn std::any::Any| #entity_name { #(#fields_ident: #fields_rand_generators(&mut *rng, usr)),* } }
         }
     }
 }
 
 fn get_field_generator(field: &Field) -> proc_macro2::TokenStream {
-    match get_attr_value(&field.attrs, "custom_rand") {
-        Some(ts) => ts,
-        None => {
-            let field_type = &field.ty;
-            quote! {
-                <#field_type as ::enum_derived::Rand>::rand_ext
-            }
-        }
+    if let Some(ts) = get_attr_value(&field.attrs, "custom_rand") {
+        return quote! {
+            (|rng, _usr| #ts(rng))
+        };
+    }
+    if let Some(ts) = get_attr_value(&field.attrs, "custom_rand_any") {
+        return ts;
+    }
+    let field_type = &field.ty;
+    quote! {
+        <#field_type as ::enum_derived::Rand>::rand
     }
 }
 
