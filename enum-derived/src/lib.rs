@@ -10,19 +10,19 @@ use rand::{
 pub use enum_derived_macro::Rand;
 
 /// Generate a random version of the implementor
-pub trait Rand<Usr>: Sized {
+pub trait Rand<F>: Sized {
     fn rand_deprecated() -> Self {
         unimplemented!()
     }
 
-    fn rand<R: Rng>(usr: &Usr, rng: &mut R) -> Self;
+    fn rand<R: Rng>(factory: &F, rng: &mut R) -> Self;
 }
 
-impl<S, U> Rand<U> for S
+impl<S, F> Rand<F> for S
 where
     Standard: Distribution<S>,
 {
-    fn rand<R: Rng>(_usr: &U, rng: &mut R) -> Self {
+    fn rand<R: Rng>(_f: &F, rng: &mut R) -> Self {
         rng.gen()
     }
 }

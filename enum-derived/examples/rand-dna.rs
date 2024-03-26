@@ -10,7 +10,7 @@ impl TestStruct {
 }
 
 #[derive(Rand)]
-#[usr(TestStruct)]
+#[factory(TestStruct)]
 pub struct Hello(
     #[custom_rand(simple_rand)] u8,
     #[custom_rand_member(is_rand)] bool,
